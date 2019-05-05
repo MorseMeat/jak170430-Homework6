@@ -1,11 +1,11 @@
 # Filename	 Makefile
-# Date		 04/22/2019
+# Date		 05/05/2019
 # Author	 Jacob Kitchens
 # Email		 jak170430@utdallas.edu
 # Course 	 CS 3377.502
 # Version	 1.0
 #	
-# Description 	 Makefile for Assignment 5
+# Description 	 Makefile for Assignment 6
 
 CXX = g++
 CFLAGS = -Wall -Wno-write-strings
