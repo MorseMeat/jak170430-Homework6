@@ -8,7 +8,7 @@
 # Description 	 Makefile for Assignment 5
 
 CXX = g++
-CFLAGS = -Wall
+CFLAGS = -Wall -Wno-write-strings
 CPPFLAGS = -I/scratch/perkins/include
 LDFLAGS = -L/scratch/perkins/lib
 LDLIBS = -lcdk -lcurses

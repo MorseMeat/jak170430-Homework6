@@ -8,15 +8,36 @@
 
 #include <iostream>
 #include "cdk.h"
+#include <fstream>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string>
+#include <iomanip>
+#include <string>
 
 
-#define MATRIX_WIDTH 3
+#define MATRIX_WIDTH 5
 #define MATRIX_HEIGHT 3
-#define BOX_WIDTH 15
-#define MATRIX_NAME_STRING "Test Matrix"
+#define BOX_WIDTH 18
+#define MATRIX_NAME_STRING "Binary File Contents"
 
 using namespace std;
 
+class BinaryFileHeader {
+public:
+  uint32_t magicNumber;
+  uint32_t versionNumber;
+  uint64_t numRecords;  
+};
+
+const int maxRecordStringLength = 25;
+
+class BinaryFileRecord {
+public: 
+  uint8_t strLength;
+  char stringBuffer[maxRecordStringLength];
+};
 
 int main()
 {
@@ -25,8 +46,8 @@ int main()
   CDKSCREEN	*cdkscreen;
   CDKMATRIX     *myMatrix;           // CDK Screen Matrix
 
-  const char 		*rowTitles[MATRIX_HEIGHT+1] = {"R0", "R1", "R2", "R3"};
-  const char 		*columnTitles[MATRIX_WIDTH+1] = {"C0", "C1", "C2", "C3"};
+  const char 		*rowTitles[MATRIX_HEIGHT+1] = {"R0", "a", "b", "c"};
+  const char 		*columnTitles[MATRIX_WIDTH+1] = {"R0", "a", "b", "c", "d", "e"};
   int		boxWidths[MATRIX_WIDTH+1] = {BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH};
   int		boxTypes[MATRIX_WIDTH+1] = {vMIXED, vMIXED, vMIXED, vMIXED};
 
@@ -60,11 +81,36 @@ int main()
   /*
    * Dipslay a message
    */
-  setCDKMatrixCell(myMatrix, 2, 2, "Test Message");
+  char buffer[maxRecordStringLength];
+  BinaryFileHeader *myHeader = new BinaryFileHeader();
+  ifstream binInFile ("cs3377.bin", ios::in | ios::binary);
+  binInFile.read((char *) myHeader, sizeof(BinaryFileHeader));
+  
+
+  sprintf(buffer, "Magic: 0x%X", myHeader->magicNumber);
+  setCDKMatrixCell(myMatrix, 1, 1, buffer);
+  sprintf(buffer, "Version: %d", myHeader->versionNumber);
+  setCDKMatrixCell(myMatrix, 1, 2, buffer);
+  sprintf(buffer, "NumRecords: %d", myHeader->numRecords);
+  setCDKMatrixCell(myMatrix, 1, 3, buffer);
+
+  int i = 2;
+  while (i < 6 || (binInFile.eof())) {
+    BinaryFileRecord *myRecord = new BinaryFileRecord();
+    binInFile.read((char*) myRecord, sizeof(BinaryFileRecord));
+    
+    sprintf(buffer, "strlen: %d", myRecord->strLength);
+    setCDKMatrixCell(myMatrix, i, 1, buffer);
+    setCDKMatrixCell(myMatrix, i, 2, myRecord->stringBuffer);
+    i++;
+  }
+  
+  binInFile.close();
+  
   drawCDKMatrix(myMatrix, true);    /* required  */
 
   /* so we can see results */
-  sleep (10);
+  sleep (5);
 
 
   // Cleanup screen
