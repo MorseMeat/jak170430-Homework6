@@ -116,7 +116,7 @@ int main()
   drawCDKMatrix(myMatrix, true);    /* required  */
 
   /* so we can see results */
-  sleep (5);
+  while (!cin.get());
 
 
   // Cleanup screen
